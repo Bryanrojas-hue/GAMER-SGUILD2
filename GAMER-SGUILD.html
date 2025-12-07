@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador CiberCafé Gamer v2.0</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuración personalizada de Tailwind para colores y sombreado de neón -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'neon-azul': '#40e0d0', // Turquesa/Cian
+                        'neon-purpura': '#9370db', // Púrpura medio
+                        'dark-bg': '#100C1F', // Negro azulado profundo
+                        'dark-card': '#161625', // Negro muy oscuro
+                    },
+                    boxShadow: {
+                        'neon': '0 0 8px rgba(147, 112, 219, 0.7), 0 0 16px rgba(64, 224, 208, 0.5)',
+                        'neon-azul-sm': '0 0 4px rgba(64, 224, 208, 0.9)',
+                        'neon-purpura-sm': '0 0 4px rgba(147, 112, 219, 0.9)',
+                        'neon-lg': '0 0 20px rgba(147, 112, 219, 0.9), 0 0 30px rgba(64, 224, 208, 0.7)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilo para el fondo de imagen y efecto de cobertura */
+        body {
+            background-color: #100C1F;
+            /* URL de imagen abstracta oscura de fondo (simulando un ambiente gamer) */
+            background-image: url('https://static.vecteezy.com/system/resources/previews/017/777/872/non_2x/neon-light-background-free-vector.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+            z-index: 0;
+        }
+
+        /* Capa de superposición oscura para asegurar la legibilidad del texto */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.35); /* Oscurece la imagen */
+            z-index: -1;
+        }
+
+        /* Estilo para las luces LED que rodean los elementos */
+        .neon-border {
+            box-shadow: 0 0 5px var(--tw-neon-purpura), 0 0 10px var(--tw-neon-azul);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .neon-border:hover {
+            box-shadow: 0 0 10px var(--tw-neon-azul), 0 0 20px var(--tw-neon-purpura);
+        }
+
+        .text-neon-blue {
+            color: #40e0d0;
+            text-shadow: 0 0 4px rgba(64, 224, 208, 0.5);
+        }
+
+        .text-neon-purple {
+            color: #9370db;
+            text-shadow: 0 0 4px rgba(147, 112, 219, 0.5);
+        }
+
+        .btn-neon {
+            background-color: #9370db;
+            color: white;
+            box-shadow: 0 0 8px #9370db;
+            transition: all 0.15s;
+        }
+
+        .btn-neon:hover {
+            background-color: #40e0d0;
+            box-shadow: 0 0 10px #40e0d0, 0 0 15px #9370db;
+        }
+
+        /* Estilo específico para el botón de FINALIZAR sesión */
+        .btn-end {
+            background-color: #ef4444; /* Rojo 500 */
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        .btn-end:hover {
+            background-color: #dc2626; /* Rojo 600 */
+            box-shadow: 0 0 10px #dc2626, 0 0 15px #ef4444;
+        }
+
+        /* Iconos simples para representar PC y Consola */
+        .icon-pc::before {
+            content: "💻"; /* Computadora de escritorio */
+            font-size: 2rem;
+            line-height: 1;
+        }
+        .icon-console::before {
+            content: "🎮"; /* Control de videojuegos */
+            font-size: 2rem;
+            line-height: 1;
+        }
+        /* Oculta la barra de desplazamiento en dispositivos pequeños */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+    </style>
+</head>
+<body class="text-white font-sans min-h-screen p-4 sm:p-8 no-scrollbar">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-neon-blue" style="text-shadow: 0 0 10px #40e0d0;">
+                <span class="text-neon-purple">GAMER-S</span><span class="text-neon-blue">GUILD</span>
+            </h1>
+            <!-- Se ha eliminado el subtítulo aquí -->
+        </header>
+
+        <main>
+            
+            <h2 class="text-3xl font-bold text-neon-blue mb-4 mt-6 border-b border-neon-blue/50 pb-2">🖥️ Estaciones de Computadoras (PC) - $20/hr</h2>
+            <!-- Contenedor para las 6 PCs -->
+            <div id="estaciones-pc-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <!-- Tarjetas de PC generadas aquí -->
+            </div>
+
+            <h2 class="text-3xl font-bold text-neon-purple mb-4 mt-8 border-b border-neon-purple/50 pb-2">🎮 Estaciones de Consolas - $35/hr</h2>
+            <!-- Contenedor para las 4 Consolas -->
+            <div id="estaciones-consola-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Tarjetas de Consola generadas aquí -->
+            </div>
+
+
+            <!-- Resumen de Totales -->
+            <div class="mt-12 p-6 bg-dark-card rounded-xl shadow-neon-lg border border-neon-purpura/50">
+                <h2 class="text-2xl font-bold text-neon-purple mb-3">📈 Resumen de Totales</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center p-3 rounded-lg bg-dark-bg/50 shadow-neon-blue-sm">
+                        <p class="text-xs text-gray-400">Sesiones Activas</p>
+                        <p id="total-activas" class="text-3xl font-bold text-neon-blue">0</p>
+                    </div>
+                    <div class="text-center p-3 rounded-lg bg-dark-bg/50 shadow-neon-purpura-sm">
+                        <p class="text-xs text-gray-400">Total Recaudado (Histórico)</p>
+                        <p id="total-recaudado" class="text-3xl font-bold text-neon-purple">$0.00</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Ticket de Cobro (Inicialmente oculto) -->
+    <div id="ticket-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50">
+        <div class="bg-dark-card w-full max-w-sm rounded-xl p-6 border-2 border-neon-azul shadow-neon-lg text-white">
+            <h3 class="text-center text-3xl font-extrabold text-neon-azul mb-4 border-b border-neon-azul/50 pb-2">
+                🎫 Ticket de Pago
+            </h3>
+
+            <div class="space-y-3 font-mono text-sm">
+                <div class="flex justify-between border-b border-white/10 pb-1">
+                    <span class="text-gray-400">Estación:</span>
+                    <span id="ticket-estacion" class="font-bold text-neon-purpura"></span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-1">
+                    <span class="text-gray-400">Tiempo Total:</span>
+                    <span id="ticket-tiempo" class="font-bold"></span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-1">
+                    <span class="text-gray-400">Tarifa por Hora:</span>
+                    <span id="ticket-tarifa" class="font-bold"></span>
+                </div>
+                <div class="flex justify-between pt-4">
+                    <span class="text-xl font-bold text-neon-azul">TOTAL A PAGAR:</span>
+                    <span id="ticket-costo-final" class="text-3xl font-extrabold text-neon-purpura"></span>
+                </div>
+            </div>
+
+            <button onclick="confirmarPago()" 
+                    class="mt-6 w-full py-3 rounded-lg font-bold uppercase transition duration-150 bg-neon-azul hover:bg-neon-purpura text-black shadow-neon-azul-sm hover:shadow-neon-purpura">
+                Confirmar Pago
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // ----------------- CONFIGURACIÓN Y ESTADO INICIAL -----------------
+
+        // Definición de las 6 computadoras (PC) y 4 consolas (CONSOLA)
+        const estacionesData = [
+            { id: 1, tipo: 'PC', tarifa: 20 },
+            { id: 2, tipo: 'PC', tarifa: 20 },
+            { id: 3, tipo: 'PC', tarifa: 20 },
+            { id: 4, tipo: 'PC', tarifa: 20 },
+            { id: 5, tipo: 'PC', tarifa: 20 },
+            { id: 6, tipo: 'PC', tarifa: 20 },
+            { id: 7, tipo: 'CONSOLA', tarifa: 35 },
+            { id: 8, tipo: 'CONSOLA', tarifa: 35 },
+            { id: 9, tipo: 'CONSOLA', tarifa: 35 },
+            { id: 10, tipo: 'CONSOLA', tarifa: 35 },
+        ];
+
+        // Estado global para las sesiones
+        let sesiones = estacionesData.map(estacion => ({
+            ...estacion,
+            activo: false,
+            tiempoInicio: 0, // Timestamp de inicio
+            intervalo: null, // Referencia al setInterval para actualizar el tiempo/costo
+            tiempoTranscurrido: 0, // Segundos totales
+            costo: 0.00,
+        }));
+
+        let totalRecaudado = 0.00;
+        // Objeto temporal para guardar los detalles de la sesión a cobrar antes del pago
+        let sesionPendienteCobro = null;
+
+
+        // ----------------- FUNCIONES DE UTILIDAD Y CÁLCULO -----------------
+
+        /**
+         * Formatea el tiempo transcurrido (en segundos) a HH:MM:SS.
+         * @param {number} segundos - Tiempo en segundos.
+         * @returns {string} Tiempo formateado.
+         */
+        function formatearTiempo(segundos) {
+            const h = Math.floor(segundos / 3600);
+            const m = Math.floor((segundos % 3600) / 60);
+            const s = segundos % 60;
+            return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+        }
+
+        /**
+         * Calcula el costo basado en la tarifa por hora y el tiempo transcurrido.
+         * @param {number} segundos - Tiempo transcurrido en segundos.
+         * @param {number} tarifaPorHora - Tarifa de la estación por hora.
+         * @returns {number} Costo calculado (redondeado a dos decimales).
+         */
+        function calcularCosto(segundos, tarifaPorHora) {
+            // Convierte segundos a una fracción de hora
+            const horas = segundos / 3600;
+            const costo = horas * tarifaPorHora;
+            return parseFloat(costo.toFixed(2));
+        }
+
+        /**
+         * Actualiza el estado del DOM (tiempo, costo y estilo del botón) para una estación.
+         * @param {object} estacion - El objeto de la sesión.
+         */
+        function actualizarEstacionDOM(estacion) {
+            const elemento = document.getElementById(`estacion-${estacion.id}`);
+            if (!elemento) return;
+
+            // Actualiza el tiempo transcurrido y costo
+            elemento.querySelector('.tiempo-transcurrido').textContent = formatearTiempo(estacion.tiempoTranscurrido);
+            elemento.querySelector('.costo-actual').textContent = `$${estacion.costo.toFixed(2)}`;
+
+            // Cambia el texto y estilo del botón de INICIAR/FINALIZAR
+            const botonToggle = elemento.querySelector('.btn-toggle');
+            
+            botonToggle.textContent = estacion.activo ? 'FINALIZAR' : 'INICIAR';
+            
+            // Estilos
+            botonToggle.classList.toggle('btn-neon', !estacion.activo);
+            botonToggle.classList.toggle('btn-end', estacion.activo); // Usa la clase .btn-end para el estilo rojo/finalizar
+            
+            // Maneja el botón de añadir tiempo
+            const botonAddTime = elemento.querySelector('.btn-add-time');
+            const buttonContainer = elemento.querySelector('.button-container');
+
+            if (estacion.activo) {
+                buttonContainer.classList.remove('justify-center');
+                botonAddTime.style.display = 'block';
+                botonToggle.classList.remove('w-full');
+                botonToggle.classList.add('flex-1');
+            } else {
+                buttonContainer.classList.add('justify-center');
+                botonAddTime.style.display = 'none';
+                botonToggle.classList.add('w-full');
+                botonToggle.classList.remove('flex-1');
+            }
+        }
+
+        // ----------------- LÓGICA DE SESIONES -----------------
+
+        /**
+         * Agrega tiempo a una sesión activa (mueve el tiempoInicio hacia el pasado).
+         * @param {number} id - ID de la estación.
+         * @param {number} minutos - Cantidad de minutos a añadir.
+         */
+        window.agregarTiempo = function(id, minutos) {
+            const estacion = sesiones.find(s => s.id === id);
+            if (!estacion || !estacion.activo) return;
+
+            const msToAdd = minutos * 60 * 1000; 
+
+            // Simula el tiempo añadido ajustando el tiempo de inicio
+            estacion.tiempoInicio -= msToAdd;
+
+            // Recalcula el tiempo y costo inmediatamente (usando el intervalo pausado para evitar un bug)
+            const ahora = Date.now();
+            const msTranscurridos = ahora - estacion.tiempoInicio;
+            estacion.tiempoTranscurrido = Math.floor(msTranscurridos / 1000);
+            estacion.costo = calcularCosto(estacion.tiempoTranscurrido, estacion.tarifa);
+
+            actualizarEstacionDOM(estacion);
+        }
+
+        /**
+         * Inicia una sesión para una estación.
+         * @param {number} id - ID de la estación.
+         */
+        function iniciarSesion(id) {
+            const estacionIndex = sesiones.findIndex(s => s.id === id);
+            if (estacionIndex === -1 || sesiones[estacionIndex].activo) return;
+
+            const estacion = sesiones[estacionIndex];
+            estacion.activo = true;
+            estacion.tiempoInicio = Date.now();
+            estacion.tiempoTranscurrido = 0;
+            estacion.costo = 0.00;
+
+            // Inicia el contador
+            estacion.intervalo = setInterval(() => {
+                const ahora = Date.now();
+                const msTranscurridos = ahora - estacion.tiempoInicio;
+                estacion.tiempoTranscurrido = Math.floor(msTranscurridos / 1000);
+                estacion.costo = calcularCosto(estacion.tiempoTranscurrido, estacion.tarifa);
+
+                actualizarEstacionDOM(estacion);
+                actualizarResumen();
+            }, 1000); // Actualiza cada segundo
+
+            actualizarEstacionDOM(estacion);
+            actualizarResumen();
+        }
+
+        /**
+         * Finaliza una sesión, detiene el contador y muestra el ticket de cobro.
+         * @param {number} id - ID de la estación.
+         */
+        function finalizarSesion(id) {
+            const estacionIndex = sesiones.findIndex(s => s.id === id);
+            if (estacionIndex === -1 || !sesiones[estacionIndex].activo) return;
+
+            const estacion = sesiones[estacionIndex];
+
+            // 1. Detiene el intervalo de actualización
+            clearInterval(estacion.intervalo);
+            estacion.intervalo = null;
+            
+            // 2. Guarda los detalles finales para el ticket
+            const costoFinal = estacion.costo;
+            const tiempoFinal = estacion.tiempoTranscurrido;
+            
+            // 3. Almacena la sesión pendiente de cobro y muestra el ticket
+            sesionPendienteCobro = { ...estacion, costoFinal, tiempoFinal };
+            mostrarTicket(sesionPendienteCobro);
+        }
+
+        /**
+         * Maneja el clic en el botón Iniciar/Finalizar.
+         * @param {number} id - ID de la estación.
+         */
+        window.toggleSesion = function(id) {
+            const estacion = sesiones.find(s => s.id === id);
+            if (estacion) {
+                if (estacion.activo) {
+                    finalizarSesion(id);
+                } else {
+                    iniciarSesion(id);
+                }
+            }
+        }
+
+        // ----------------- LÓGICA DEL TICKET DE COBRO (MODAL) -----------------
+        
+        /**
+         * Muestra el modal de ticket con los detalles de la sesión.
+         * @param {object} sesion - Objeto de la sesión con detalles finales.
+         */
+        function mostrarTicket(sesion) {
+            const displayId = sesion.tipo === 'PC' ? sesion.id : sesion.id - 6;
+            const tituloEstacion = `${sesion.tipo === 'PC' ? 'Computadora' : 'Consola'} ${displayId}`;
+
+            document.getElementById('ticket-estacion').textContent = tituloEstacion;
+            document.getElementById('ticket-tiempo').textContent = formatearTiempo(sesion.tiempoFinal);
+            document.getElementById('ticket-tarifa').textContent = `$${sesion.tarifa}.00 / hora`;
+            document.getElementById('ticket-costo-final').textContent = `$${sesion.costoFinal.toFixed(2)}`;
+
+            document.getElementById('ticket-modal').classList.remove('hidden');
+        }
+
+        /**
+         * Confirma el pago, actualiza el total recaudado y resetea la sesión.
+         */
+        window.confirmarPago = function() {
+            if (!sesionPendienteCobro) return;
+
+            // 1. Actualiza el total recaudado
+            totalRecaudado += sesionPendienteCobro.costoFinal;
+
+            // 2. Encuentra la sesión original para el reseteo
+            const estacionIndex = sesiones.findIndex(s => s.id === sesionPendienteCobro.id);
+            if (estacionIndex !== -1) {
+                const estacion = sesiones[estacionIndex];
+                
+                // 3. Reinicia el estado de la sesión
+                estacion.activo = false;
+                estacion.tiempoInicio = 0;
+                estacion.tiempoTranscurrido = 0;
+                estacion.costo = 0.00;
+
+                actualizarEstacionDOM(estacion);
+            }
+            
+            // 4. Limpia el estado pendiente y oculta el modal
+            sesionPendienteCobro = null;
+            document.getElementById('ticket-modal').classList.add('hidden');
+            
+            // 5. Actualiza el resumen global
+            actualizarResumen();
+        }
+
+
+        // ----------------- ACTUALIZACIÓN DE UI GLOBAL -----------------
+
+        /**
+         * Actualiza el contador de sesiones activas y el total recaudado.
+         */
+        function actualizarResumen() {
+            const activas = sesiones.filter(s => s.activo).length;
+            document.getElementById('total-activas').textContent = activas;
+            document.getElementById('total-recaudado').textContent = `$${totalRecaudado.toFixed(2)}`;
+        }
+
+        // ----------------- INICIALIZACIÓN DE LA APLICACIÓN -----------------
+
+        /**
+         * Crea el HTML de la tarjeta para cada estación.
+         */
+        function renderEstaciones() {
+            const gridPC = document.getElementById('estaciones-pc-grid');
+            const gridConsola = document.getElementById('estaciones-consola-grid');
+            
+            let htmlPC = '';
+            let htmlConsola = '';
+
+            // Genera el HTML para cada estación
+            sesiones.forEach(estacion => {
+                const isPC = estacion.tipo === 'PC';
+                const iconClass = isPC ? 'icon-pc' : 'icon-console';
+                const typeColor = isPC ? 'text-neon-azul' : 'text-neon-purpura';
+                const shadowClass = isPC ? 'shadow-neon-azul-sm' : 'shadow-neon-purpura-sm';
+                
+                // Muestra el ID correcto para Consola (1 a 4)
+                const displayId = isPC ? estacion.id : estacion.id - 6;
+                const title = isPC ? `Computadora ${displayId}` : `Consola ${displayId}`;
+
+                const cardHtml = `
+                    <div id="estacion-${estacion.id}" class="bg-dark-card p-4 rounded-xl neon-border flex flex-col items-center text-center ${shadowClass}">
+                        <div class="${iconClass} ${typeColor} mb-2"></div>
+                        <h3 class="text-xl font-bold ${typeColor}">${title}</h3>
+                        <p class="text-xs text-gray-400">TARIFA: $${estacion.tarifa}/hr</p>
+                        
+                        <div class="mt-3 w-full">
+                            <p class="text-sm font-semibold text-gray-300">Tiempo</p>
+                            <p class="tiempo-transcurrido text-2xl font-mono text-white">00:00:00</p>
+                        </div>
+                        
+                        <div class="mt-2 w-full">
+                            <p class="text-sm font-semibold text-gray-300">Costo</p>
+                            <p class="costo-actual text-3xl font-extrabold ${isPC ? 'text-neon-azul' : 'text-neon-purpura'}">$0.00</p>
+                        </div>
+                        
+                        <!-- Contenedor de Botones - Flex para la nueva funcionalidad -->
+                        <div class="button-container mt-4 w-full flex space-x-2 justify-center">
+                            <!-- Botón de Añadir Tiempo (Inicia oculto) -->
+                            <button onclick="agregarTiempo(${estacion.id}, 15)" 
+                                    style="display: none;"
+                                    class="btn-add-time flex-1 py-2 rounded-lg font-bold uppercase text-xs transition duration-150 bg-neon-purpura/70 hover:bg-neon-purpura shadow-neon-purpura-sm text-white">
+                                +15 Min
+                            </button>
+
+                            <!-- Botón Principal (Toggle) - Inicia ancho completo -->
+                            <button onclick="toggleSesion(${estacion.id})" 
+                                    class="btn-toggle w-full py-2 rounded-lg font-bold uppercase transition duration-150 btn-neon">
+                                INICIAR
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                if (isPC) {
+                    htmlPC += cardHtml;
+                } else {
+                    htmlConsola += cardHtml;
+                }
+            });
+
+            // Inserta el HTML en los contenedores separados
+            if (gridPC) gridPC.innerHTML = htmlPC;
+            if (gridConsola) gridConsola.innerHTML = htmlConsola;
+        }
+
+        // Inicia la aplicación al cargar la ventana
+        window.onload = () => {
+            renderEstaciones();
+            actualizarResumen();
+        };
+
+    </script>
+</body>
+</html>
